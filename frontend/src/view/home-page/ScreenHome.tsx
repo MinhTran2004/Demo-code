@@ -1,21 +1,53 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useState } from "react";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, Dimensions, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
 import ComponentHome from "@component/Component_Home";
 import ViewModelProduct from "@viewmodel/VM_Product";
 
 export default function ScreenHome({ navigation }: any) {
     const [search, setSearch] = useState("");
-
+    const [currentBanner, setCurrentBanner] = useState(0);
+    const { width: bannerWidth } = Dimensions.get("window");
+    const scrollViewRef = useRef<ScrollView>(null);
     const viewModel = ViewModelProduct(navigation);
-    // console.log(viewModel.data);
-    
+
+    const banners = [
+        require("@images/logo_demo.jpg"),
+        require("@images/logo_app.png"),
+        require("@images/logo_demo.jpg")
+    ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentBanner((prevBanner) => (prevBanner + 1) % banners.length);
+        }, 3000); // Chuyển ảnh mỗi 3 giây
+
+        return () => clearInterval(interval); // Xóa interval khi component unmount
+    }, []);
+
+    useEffect(() => {
+        // Tự động chuyển ảnh khi currentBanner thay đổi
+        if (scrollViewRef.current) {
+            scrollViewRef.current.scrollTo({ x: currentBanner * bannerWidth, animated: true });
+        }
+    }, [currentBanner]);
+
+    const handleScrollEnd = (event: any) => {
+        // Xác định vị trí banner hiện tại sau khi cuộn
+        const position = Math.floor(event.nativeEvent.contentOffset.x / bannerWidth);
+        setCurrentBanner(position);
+    };
+
+    const getIconColor = (index: number) => {
+        return index === currentBanner ? 'green' : 'gray';
+    };
+
     return (
         <ScrollView>
             <View style={styles.main}>
                 {/* Header */}
                 <View style={styles.container_header}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Image source={require("@images//user.png")} style={{ width: 45, height: 45 }} />
+                        <Image source={require("@images/user.png")} style={{ width: 45, height: 45 }} />
                         <View style={{ marginLeft: 10 }}>
                             <Text style={[styles.text_header, { fontWeight: "normal", color: '#8c8d8e' }]}>Thành viên</Text>
                             <Text style={styles.text_header}>Trần Công Minh</Text>
@@ -24,7 +56,7 @@ export default function ScreenHome({ navigation }: any) {
 
                     <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
                         <View style={styles.icon_header}>
-                            <Image source={require("@images//cart.png")} style={{ width: 30, height: 30 }} />
+                            <Image source={require("@images/cart.png")} style={{ width: 30, height: 30 }} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -33,9 +65,33 @@ export default function ScreenHome({ navigation }: any) {
                     <ComponentHome.InputScreach input={search} event={setSearch} />
                 </TouchableOpacity>
 
-                {/* body  */}
+                {/* Banner */}
+                <ScrollView
+                    ref={scrollViewRef}
+                    horizontal
+                    pagingEnabled
+                    onMomentumScrollEnd={handleScrollEnd} // Cập nhật vị trí khi cuộn xong
+                    showsHorizontalScrollIndicator={false}
+                    scrollEventThrottle={16} // Giúp theo dõi cuộn mượt mà
+                >
+                    {banners.map((banner, index) => (
+                        <Image key={index} source={banner} style={{ width: bannerWidth, height: 180 }} />
+                    ))}
+                </ScrollView>
+
+                {/* Icons biểu tượng slide */}
+                <View style={styles.iconContainer}>
+                    {banners.map((_, index) => (
+                        <View
+                            key={index}
+                            style={[
+                                styles.iconDot,
+                                { backgroundColor: getIconColor(index) }
+                            ]}
+                        />
+                    ))}
+                </View>
                 <ComponentHome.TextTitle text={"Special Offers"} />
-                <Image source={require("@images//logo_demo.jpg")} style={styles.img_body} />
 
                 <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                     <ComponentHome.SelectCategoryProductVertical navigation={navigation} icon={require("@images/icon_hambuger.png")} text={"Hambuger"} />
@@ -43,10 +99,11 @@ export default function ScreenHome({ navigation }: any) {
                     <ComponentHome.SelectCategoryProductVertical navigation={navigation} icon={require("@images/icon_noodles.png")} text={"Noodles"} />
                     <ComponentHome.SelectCategoryProductVertical navigation={navigation} icon={require("@images/icon_chicken.png")} text={"Chicken"} />
                 </View>
+
                 <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                     <ComponentHome.SelectCategoryProductVertical navigation={navigation} icon={require("@images/icon_potato.png")} text={"Potato"} />
                     <ComponentHome.SelectCategoryProductVertical navigation={navigation} icon={require("@images/icon_drink.png")} text={"Drink"} />
-                    <ComponentHome.SelectCategoryProductVertical navigation={navigation} icon={require("@images/icon_cake.png")} text={"Dessest"} />
+                    <ComponentHome.SelectCategoryProductVertical navigation={navigation} icon={require("@images/icon_cake.png")} text={"Dessert"} />
                     <ComponentHome.SelectCategoryProductVertical navigation={navigation} icon={require("@images/icon_more.png")} text={"More"} />
                 </View>
 
@@ -80,17 +137,16 @@ export default function ScreenHome({ navigation }: any) {
                 {
                     Array.isArray(viewModel.data) && viewModel.data.length > 0 ? (
                         viewModel.data.map((item, index) => {
-                            return <ComponentHome.ProductVertical product={item} navigation={navigation} />
+                            return <ComponentHome.ProductVertical product={item} navigation={navigation} key={index} />
                         })
                     ) : (
-                        <Text>No data available</Text>  // Hoặc bạn có thể hiển thị một component khác khi không có dữ liệu
+                        <Text>No data available</Text>
                     )
                 }
-
-
             </View>
         </ScrollView>
-    )
+
+    );
 }
 
 const styles = StyleSheet.create({
@@ -100,7 +156,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingTop: 10,
     },
-    // header 
     container_header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -117,13 +172,22 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         padding: 9,
     },
-    // body
     img_body: {
-        width: '100%',
+        width: 300, // Chiều rộng của banner, điều chỉnh phù hợp nếu cần
         height: 180,
-        objectFit: 'fill',
+        resizeMode: 'cover',
         borderRadius: 10,
         marginBottom: 20,
     },
-
-})
+    iconContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginVertical: 10,
+    },
+    iconDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginHorizontal: 5,
+    },
+});

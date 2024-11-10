@@ -1,37 +1,45 @@
-import ComponentHome from '@component/Component_Home';
 import React, { useState } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-
-//Dữ liệu test
-const products = [
-    { id: '1', name: 'Pizza thập cẩm', price: '$55.000', image: require('@images//image_product_demo.png') },
-    { id: '2', name: 'Pizza bò', price: '$50.000', image: require('@images//image_product_demo.png') },
-    { id: '3', name: 'Vegetarian Noodles', price: '$23.000', image: require('@images/image_product_demo.png') },
-    { id: '4', name: 'Mixed Salad BonBum', price: '$32.000', image: require('@images/image_product_demo.png') },
-];
+import ProductService from '../../service/Product.Sevice'; // Giả sử bạn đã tạo một service để gọi API
+import ComponentHome from '@component/Component_Home';
 
 const ScreenSearch = ({ navigation }: any) => {
     const [search, setSearch] = useState('');
-    const [filteredProducts, setFilteredProducts] = useState(products);
-    const [favourite, setFavourite] = useState(false);
+    const [filteredProducts, setFilteredProducts] = useState<any[]>([]);  // Dữ liệu hiển thị
+    const [favouriteProducts, setFavouriteProducts] = useState<{ [key: string]: boolean }>({});
 
-    const handleSearch = (text: string) => {
-        setSearch(text);
-        if (text) {
-            const filtered = products.filter(product =>
-                product.name.toLowerCase().includes(text.toLowerCase())
-            );
-            setFilteredProducts(filtered);
+    // Hàm gọi API tìm kiếm sản phẩm
+    const handleSearch = async (name: string) => {
+        setSearch(name);
+
+        if (name) {
+            try {
+                // Gọi API tìm kiếm từ ProductService
+                const response = await ProductService.searchProduct(name);
+                // Cập nhật danh sách sản phẩm tìm thấy
+                setFilteredProducts(response.products || []);
+            } catch (error) {
+                console.error('Error searching products:', error);
+                setFilteredProducts([]);  // Trường hợp có lỗi khi tìm kiếm
+            }
         } else {
-            setFilteredProducts(products);
+            // Nếu không có từ khóa tìm kiếm, hiển thị tất cả sản phẩm
+            setFilteredProducts([]);
         }
+    };
+
+    const toggleFavourite = (id: string) => {
+        setFavouriteProducts((prev) => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.searchHeader}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Image source={require('@images//ic_back.png')} style={styles.icback} />
+                    <Image source={require('@images/ic_back.png')} style={styles.icback} />
                 </TouchableOpacity>
 
                 <View style={{ flex: 1 }}>
@@ -47,21 +55,21 @@ const ScreenSearch = ({ navigation }: any) => {
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
                         <TouchableOpacity style={styles.productItem} onPress={() => navigation.navigate("DetailProduct")}>
-                            <Image source={item.image} style={styles.productImage} />
+                            <Image source={{ uri: item.image }} style={styles.productImage} />
                             <View style={{ width: '100%', marginLeft: 10, justifyContent: 'space-between' }}>
                                 <View style={styles.productInfo}>
                                     <View>
                                         <Text style={styles.productName}>{item.name}</Text>
-                                        <Text>Hambuger</Text>
+                                        <Text>{item.category}</Text>  {/* Ví dụ thêm thông tin thể loại */}
                                     </View>
                                     <View style={{ width: '72%', flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <Text style={styles.productPrice}>{item.price}</Text>
-                                        <TouchableOpacity onPress={() => setFavourite(!favourite)}>
-                                            {favourite ?
-                                                (<Image source={require('@images/icon_showFavourite.png')} style={{ width: 20, height: 20 }} />)
-                                                :
-                                                (<Image source={require('@images/icon_unFavourite.png')} style={{ width: 20, height: 20 }} />)
-                                            }
+                                        <TouchableOpacity onPress={() => toggleFavourite(item.id)}>
+                                            {favouriteProducts[item.id] ? (
+                                                <Image source={require('@images/icon_showFavourite.png')} style={{ width: 20, height: 20 }} />
+                                            ) : (
+                                                <Image source={require('@images/icon_unFavourite.png')} style={{ width: 20, height: 20 }} />
+                                            )}
                                         </TouchableOpacity>
                                     </View>
                                 </View>

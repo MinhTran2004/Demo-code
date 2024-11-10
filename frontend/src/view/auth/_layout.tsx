@@ -11,6 +11,7 @@ const LayoutAuth = () => {
             <Stack.Screen name="Login" component={ScreenLogin}/>
             <Stack.Screen name="Register" component={ScreenRegister}/>
             <Stack.Screen name="LayoutBottomTabs" component={LayoutBottomTabs}/>
+           
         </Stack.Navigator>
     )
 }
