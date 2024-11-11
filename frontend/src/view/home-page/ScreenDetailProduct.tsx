@@ -1,22 +1,44 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Feather from "react-native-vector-icons/Feather"
-import { useState } from "react";
+import React, { useState } from "react";
+import { ViewModelDetailProduct } from "@viewmodel/VM-Cart/DetailProduct";
+import { NavigationProp } from "@react-navigation/native";
 
-export default function ScreenDetailProduct({navigation}:any) {
+interface Product {
+    navigation: NavigationProp<any>,
+    _id: string,
+    image: string,
+    name: string,
+    idCategory: string,
+    price: string,
+}
+
+interface Props {
+    route: {
+        params: Product
+    } 
+}
+
+const ScreenDetailProduct: React.FC<Props> = (props) => {
+    const product = props.route.params;
+    const viewModel = ViewModelDetailProduct(product.navigation);
+
+
     const [favourite, setFavourite] = useState(false);
+
     return (
         <View style={{ flex: 1 }}>
 
-            <TouchableOpacity style={styles.icon_return} onPress={() => navigation.navigate("Main")}>
-                <Feather name="arrow-left" style={{ fontSize: 30, color: "white" }} />
+            <TouchableOpacity style={styles.icon_return} onPress={() => product.navigation.navigate("Home")}>
+                <Feather name="arrow-left" style={{ fontSize: 30, color: "black" }} />
             </TouchableOpacity>
 
-            <Image source={require('@images/image_product_demo.png')} style={styles.image_product} />
+            <Image src={product.image} style={styles.image_product} />
             <View style={styles.container_infor}>
                 <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View>
-                        <Text style={styles.name_product}>Mixed Salad BonBum</Text>
-                        <Text style={styles.price_product}>$ 23.000.000</Text>
+                        <Text style={styles.name_product}>{product.name}</Text>
+                        <Text style={styles.price_product}>$ {product.price}</Text>
                     </View>
                     <TouchableOpacity onPress={() => setFavourite(!favourite)}>
                         {favourite ?
@@ -35,7 +57,7 @@ export default function ScreenDetailProduct({navigation}:any) {
                 <TouchableOpacity style={styles.btn_messenger}>
                     <Image source={require("@images//icon_messenger.png")} style={{ width: 30, height: 30 }} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.btn_cart}>
+                <TouchableOpacity style={styles.btn_cart} onPress={() => viewModel.addProductToCart(product._id)}>
                     <Image source={require("@images//cart.png")} style={{ width: 35, height: 35 }} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.btn_sell}>
@@ -45,8 +67,11 @@ export default function ScreenDetailProduct({navigation}:any) {
         </View>
     )
 }
+
+export default ScreenDetailProduct;
+
 const styles = StyleSheet.create({
-    icon_return:{
+    icon_return: {
         position: 'absolute',
         top: 10,
         left: 5,

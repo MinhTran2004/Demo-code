@@ -1,14 +1,12 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useState } from "react";
 import ComponentHome from "@component/Component_Home";
-import ViewModelProduct from "@viewmodel/VM_Product";
+import { ViewModelHome } from "@viewmodel/VM-Product/Home";
+import ProductHozirontalItem from "../../componen/home-page/ProductHozirontalItem";
+import ProductVerticalItem from "../../componen/home-page/ProductVerticalItem";
 
 export default function ScreenHome({ navigation }: any) {
-    const [search, setSearch] = useState("");
+    const viewModel = ViewModelHome(navigation);
 
-    const viewModel = ViewModelProduct(navigation);
-    // console.log(viewModel.data);
-    
     return (
         <ScrollView>
             <View style={styles.main}>
@@ -30,7 +28,7 @@ export default function ScreenHome({ navigation }: any) {
                 </View>
 
                 <TouchableOpacity onPress={() => navigation.navigate('Search')}>
-                    <ComponentHome.InputScreach input={search} event={setSearch} />
+                    <ComponentHome.InputScreach input={viewModel.search} event={viewModel.setSearch} />
                 </TouchableOpacity>
 
                 {/* body  */}
@@ -53,14 +51,13 @@ export default function ScreenHome({ navigation }: any) {
                 <ComponentHome.TextTitle text={"Discount Guaranteed!"} />
 
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                    <View style={{ flexDirection: 'row' }}>
-                        <ComponentHome.ProductHozirontal navigation={navigation} />
-                        <ComponentHome.ProductHozirontal navigation={navigation} />
-                        <ComponentHome.ProductHozirontal navigation={navigation} />
-                        <ComponentHome.ProductHozirontal navigation={navigation} />
-                        <ComponentHome.ProductHozirontal navigation={navigation} />
-                        <ComponentHome.ProductHozirontal navigation={navigation} />
-                    </View>
+                    {viewModel.dataProductHorizontal.length > 0 ?
+                        (viewModel.dataProductHorizontal.map((item) => (
+                            <ProductHozirontalItem key={item._id} _id={item._id} image={item.image} name={item.name} idCategory={item.idCategory} price={item.price} navigation={navigation} />
+                        )))
+                        :
+                        (<Text>Không có dữ liệu</Text>)
+                    }
                 </ScrollView>
 
                 <ComponentHome.TextTitle text={"Recommended For You"} />
@@ -77,17 +74,13 @@ export default function ScreenHome({ navigation }: any) {
                     <ComponentHome.SelectCategoryProuctHozizontal icon={require("@images/icon_more.png")} text={"More"} />
                 </ScrollView>
 
-                {
-                    Array.isArray(viewModel.data) && viewModel.data.length > 0 ? (
-                        viewModel.data.map((item, index) => {
-                            return <ComponentHome.ProductVertical product={item} navigation={navigation} />
-                        })
-                    ) : (
-                        <Text>No data available</Text>  // Hoặc bạn có thể hiển thị một component khác khi không có dữ liệu
-                    )
+                {viewModel.dataProductVertical.length > 0 ? (
+                    viewModel.dataProductVertical.map((item) => (
+                        <ProductVerticalItem key={item._id} _id={item._id} image={item.image} name={item.name} idCategory={item.idCategory} price={item.price} navigation={navigation} />
+                    )))
+                    :
+                    (<Text>Không có dữ liệu</Text>)
                 }
-
-
             </View>
         </ScrollView>
     )

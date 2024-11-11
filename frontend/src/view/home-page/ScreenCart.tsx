@@ -1,37 +1,41 @@
-import ComponentCart from "@component/Component_Cart";
+import { ViewModelCart } from "@viewmodel/VM-Cart/Cart";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
+import CartItem from "../../componen/cart/CartItem";
 
 export default function ScreenCart({ navigation }: any) {
+    const viewModel = ViewModelCart();
     return (
         <View style={styles.main}>
 
-            <ScrollView style={{padding: 10}}>
+            <ScrollView style={{ padding: 10 }}>
                 {/* header */}
                 <View style={styles.container_header}>
                     <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-                        <Feather name="arrow-left" style={{fontSize: 30}} />
+                        <Feather name="arrow-left" style={{ fontSize: 30 }} />
                     </TouchableOpacity>
                     <Text style={styles.text_title}>Giỏ hàng</Text>
                 </View>
 
                 {/* body */}
-                <ComponentCart.CartVertical />
-                <ComponentCart.CartVertical />
-                <ComponentCart.CartVertical />
-                <ComponentCart.CartVertical />
-                <ComponentCart.CartVertical />
-                <ComponentCart.CartVertical />
+                {viewModel.data != null ?
+                    viewModel.data.map((item) => (
+                        <CartItem key={item.cart._id} cart={item.cart} product={item.product} event={viewModel.updateQuantityById}/>
+                    ))
+                    :
+                    <Text>Không có dữ liệu</Text>
+                }
+
             </ScrollView>
 
             {/* footer */}
             <View style={styles.container_footer}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={styles.text_total}>Tổng tiền</Text>
-                    <Text style={styles.text_total}>$ 20.000</Text>
+                    <Text style={styles.text_total}>$ {viewModel.total}</Text>
                 </View>
 
-                <TouchableOpacity style={styles.btn_payment} onPress={()=> navigation.navigate('Payment')}>
+                <TouchableOpacity style={styles.btn_payment} onPress={() => navigation.navigate('Payment')}>
                     <Text style={styles.text_payment}>Thanh toán</Text>
                 </TouchableOpacity>
             </View>

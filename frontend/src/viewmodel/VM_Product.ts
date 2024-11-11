@@ -1,4 +1,4 @@
-import ProductService from "@service/Product.Sevice"
+import ProductService from "@service/Product_Sevice"
 import { useEffect, useState } from "react";
 
 export const ViewModelProduct = (navigation: any) => {

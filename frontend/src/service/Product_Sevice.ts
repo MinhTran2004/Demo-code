@@ -11,6 +11,17 @@ class ProductService {
             console.log(err);
         }
     }
+
+    static getProductById = async (idProduct:string) => {
+        try{
+            const reponse = (await axios.get(`${this.url}/getProductById?_id=${idProduct}`)).data;
+            if(reponse){
+                return reponse;
+            }
+        }catch(err){
+            console.log(err);
+        }
+    }
 }
 
 export default ProductService;

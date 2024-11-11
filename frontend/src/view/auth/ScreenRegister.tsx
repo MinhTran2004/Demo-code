@@ -1,10 +1,9 @@
+import ComponentLogin from "@component/Component_Login";
+import { ViewModelRegister } from "@viewmodel/VM-Account/Register";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import ComponentLogin from "../../component/Component_Login";
-import { ViewModelAccount } from "../../viewmodel/VM_Account";
-import { handleRegister } from "../../service/Account.Service"; 
 
 export default function ScreenRegister({ navigation }: any) {
-    const { username, setUsername, account, setAccount, password, setPassword, phone, setPhone } = ViewModelAccount();
+    const viewModel = ViewModelRegister(navigation);
     return (
         <View style={styles.main}>
             <Image source={require("@images//logo_app.png")} style={styles.img_logo} />
@@ -14,34 +13,25 @@ export default function ScreenRegister({ navigation }: any) {
                 <ComponentLogin.InputTextLogin 
                     placeholder={"Nhập tên người dùng"} 
                     icon={require("@images//account.png")} 
-                    input={username} 
-                    event={setUsername} 
+                    input={viewModel.username} 
+                    event={viewModel.setUsername} 
                 />
                 <ComponentLogin.InputTextLogin 
                     placeholder={"Nhập tài khoản"} 
                     icon={require("@images//mail.png")} 
-                    input={account} 
-                    event={setAccount} 
+                    input={viewModel.account} 
+                    event={viewModel.setAccount} 
                 />
                 <ComponentLogin.InputTextLogin 
                     placeholder={"Nhập mật khẩu"} 
                     icon={require("@images//password.png")} 
-                    input={password} 
-                    event={setPassword} 
+                    input={viewModel.password} 
+                    event={viewModel.setPassword} 
                     secureTextEntry={true} // Use secure text entry for password input
-                />
-                <ComponentLogin.InputTextLogin 
-                    placeholder={"Nhập số điện thoại"} 
-                    icon={require("@images//phone.png")} 
-                    input={phone} 
-                    event={setPhone} 
                 />
             </View>
             
-            <TouchableOpacity style={styles.layout_btn_login} onPress={()=>{
-                    handleRegister(username, account, password, phone, "user", "active", navigation);
-
-            }}>
+            <TouchableOpacity style={styles.layout_btn_login} onPress={viewModel.createAccount}>
                 <Text style={styles.text_btn_login}>Đăng ký</Text>
             </TouchableOpacity>
 

@@ -1,7 +1,8 @@
 import { combineReducers, createStore } from '@reduxjs/toolkit'
-import { accountReducer } from './reducers/user';
-const rootReducer = combineReducers({
+import { accountReducer } from './reducers/account';
+
+export const rootReducer = combineReducers({
     account: accountReducer,
 })
-const store = createStore(rootReducer);
-export default store;
+const Store = createStore(rootReducer);
+export default Store;

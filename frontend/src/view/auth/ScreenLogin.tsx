@@ -1,16 +1,15 @@
 
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ComponentLogin from "@component/Component_Login";
-import { ViewModelAccount } from "@viewmodel/VM_Account";
+import { ViewModelLogin } from "@viewmodel/VM-Account/Login";
 
 export default function ScreenLogin({ navigation }: any) {
-    const viewModel = ViewModelAccount(navigation);
-    // const [isChecked, setIsChecked] = useState(true);
+    const viewModel = ViewModelLogin(navigation);
 
     return (
         <View style={styles.main}>
             <Image source={require("@images//logo_app.png")} style={styles.img_logo} />
-            <Text style={styles.text_title}>Đăng Nhập Vào Tài Khoản Của Bạn</Text>
+            <Text style={styles.text_title}>Đăng Nhập</Text>
 
             <View style={{ marginTop: 50, width: '100%' }}>
                 <ComponentLogin.InputTextLogin 
@@ -41,10 +40,7 @@ export default function ScreenLogin({ navigation }: any) {
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.layout_btn_login} onPress={()=>{
-                viewModel.getAccountByAccountAndPassword()
-            }
-            }>
+            <TouchableOpacity style={styles.layout_btn_login} onPress={viewModel.getAccountByAccountAndPassword}>
                 <Text style={styles.text_btn_login}>Đăng Nhập</Text>
             </TouchableOpacity>
 
