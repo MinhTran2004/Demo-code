@@ -5,16 +5,16 @@ const router = express.Router();
 
 router.get('/getAllProductByLimit', async (req, res) => {
     const limit = req.query.limit;
-    console.log(limit);
-    
-    const product = await Product.find().skip(0).limit(limit);
-    console.log(product);
-    
-    res.status(200).send({
-        messenger: 'success',
-        product: product,
-    });
+    const product = await Product.find().skip(0).limit(20);
+    res.send(product);
 })
+
+router.get('/getProductById', async (req, res) => {
+    const id = req.query;
+    const product = await Product.findById(id);
+    res.send(product);
+})
+
 
 
 module.exports = router;

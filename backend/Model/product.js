@@ -10,9 +10,8 @@ const ProductSchema = new mongoose.Schema({
     quantity: { type: String, required: true },
     rate: { type: String, required: true },
     describe: { type: String, required: true },
-    dateCreate: { type: String, required: true },
     status: { type: String, required: true },
-})
+}, {timestamps: true});
 
 const Product = mongoose.model('Products', ProductSchema);
 
