@@ -1,7 +1,7 @@
 import { Cart } from "@model/Model_Cart";
 import { Product } from "@model/Model_Product";
 import { CartService } from "@service/Cart_Service";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface TypeCart {
     cart: Cart,
@@ -15,11 +15,7 @@ export const ViewModelCart = () => {
     const getAllProductInCart = async () => {
         const reponse = await CartService.getAllProductInCart();
 
-        const sum = reponse.reduce((sum, item) => {
-            return sum + (item.cart.quantity * item.product.price);
-        }, 0)
-
-        setToTal(sum);
+        calculate(reponse);
         setData(reponse);
     }
 
@@ -27,26 +23,27 @@ export const ViewModelCart = () => {
         if (status) {
             const reponse = await CartService.updateQuantityById(_id, quantity + 1);
             if (reponse) {
-                const sum = reponse.reduce((sum, item) => {
-                    return sum + (item.cart.quantity * item.product.price);
-                }, 0)
-                setToTal(sum);
+                calculate(reponse);
             }
             setData(reponse || []);
         } else {
             if (quantity > 1) {
                 const reponse = await CartService.updateQuantityById(_id, quantity - 1);
                 if (reponse) {
-                    const sum = reponse.reduce((sum, item) => {
-                        return sum + (item.cart.quantity * item.product.price);
-                    }, 0)
-                    setToTal(sum);
+                    calculate(reponse);
                 }
                 setData(reponse || []);
             } else {
                 console.log('Số lượng tối thiều là 1');
             }
         }
+    }
+
+    const calculate = (reponse: any) => {
+        const sum = reponse.reduce((sum:any, item:any) => {
+            return sum + (item.cart.quantity * item.product.price);
+        }, 0)
+        setToTal(sum);
     }
 
     useEffect(() => {
