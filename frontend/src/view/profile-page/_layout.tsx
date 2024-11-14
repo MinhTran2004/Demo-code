@@ -7,10 +7,11 @@ const Stack = createNativeStackNavigator();
 
 const LayoutProfilePage = () => {
     return (
-        <Stack.Navigator initialRouteName="Notification">
-            <Stack.Screen name="Account" component={ScreenAccount}/>
-            <Stack.Screen name="Favourite" component={ScreenFavourite}/>
-            <Stack.Screen name="Profile" component={ScreenProfile}/>
+        <Stack.Navigator initialRouteName="Profile" >
+            <Stack.Screen name="Profile" component={ScreenProfile} />
+            <Stack.Screen name="Account" component={ScreenAccount} />
+            <Stack.Screen name="Favourite" component={ScreenFavourite} />
+
         </Stack.Navigator>
     )
 }

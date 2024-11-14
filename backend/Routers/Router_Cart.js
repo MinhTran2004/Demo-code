@@ -6,6 +6,7 @@ const router = express.Router();
 router.post('/addProductToCart' , async (req, res) => {
     const data = req.body;
     const cart = await new Cart(data).save();
+    
     res.send(cart);
 })
 
@@ -21,5 +22,13 @@ router.patch('/updateQuantityById', async (req, res) => {
     
     res.send(cart)
 })
+
+router.delete('/deleteProductFromCart/:id', async (req, res) => {
+    const { id } = req.params;
+    const cart = await Cart.findByIdAndDelete(id);
+    res.send(cart);
+});
+
+
 
 module.exports = router;

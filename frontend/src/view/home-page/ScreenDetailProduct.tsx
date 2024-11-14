@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert,Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Feather from "react-native-vector-icons/Feather"
 import React, { useState } from "react";
 import { ViewModelDetailProduct } from "@viewmodel/VM-Cart/DetailProduct";
@@ -57,9 +57,19 @@ const ScreenDetailProduct: React.FC<Props> = (props) => {
                 <TouchableOpacity style={styles.btn_messenger}>
                     <Image source={require("@images//icon_messenger.png")} style={{ width: 30, height: 30 }} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.btn_cart} onPress={() => viewModel.addProductToCart(product._id)}>
-                    <Image source={require("@images//cart.png")} style={{ width: 35, height: 35 }} />
-                </TouchableOpacity>
+                <TouchableOpacity
+    style={styles.btn_cart}
+    onPress={() => {
+        viewModel.addProductToCart(product._id);
+        Alert.alert(
+            "Thông báo",
+            "Thêm thành công!",
+            [{ text: "OK" }]
+        );
+    }}
+>
+    <Image source={require("@images//cart.png")} style={{ width: 35, height: 35 }} />
+</TouchableOpacity>
                 <TouchableOpacity style={styles.btn_sell}>
                     <Text style={{ fontSize: 20, color: 'white' }}>Mua ngay</Text>
                 </TouchableOpacity>

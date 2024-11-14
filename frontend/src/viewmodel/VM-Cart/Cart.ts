@@ -9,40 +9,51 @@ interface TypeCart {
 }
 
 export const ViewModelCart = () => {
-    const [data, setData] = useState<TypeCart[]>([])
+    const [data, setData] = useState<TypeCart[]>([]);
     const [total, setToTal] = useState(0);
 
+    // Lấy tất cả sản phẩm trong giỏ hàng
     const getAllProductInCart = async () => {
-        const reponse = await CartService.getAllProductInCart();
-
-        calculate(reponse);
-        setData(reponse);
+        const response = await CartService.getAllProductInCart();
+        calculate(response);
+        setData(response);
     }
 
+    // Cập nhật số lượng sản phẩm
     const updateQuantityById = async (_id: string, quantity: number, status: boolean) => {
         if (status) {
-            const reponse = await CartService.updateQuantityById(_id, quantity + 1);
-            if (reponse) {
-                calculate(reponse);
+            const response = await CartService.updateQuantityById(_id, quantity + 1);
+            if (response) {
+                calculate(response);
             }
-            setData(reponse || []);
+            setData(response || []);
         } else {
             if (quantity > 1) {
-                const reponse = await CartService.updateQuantityById(_id, quantity - 1);
-                if (reponse) {
-                    calculate(reponse);
+                const response = await CartService.updateQuantityById(_id, quantity - 1);
+                if (response) {
+                    calculate(response);
                 }
-                setData(reponse || []);
+                setData(response || []);
             } else {
-                console.log('Số lượng tối thiều là 1');
+                console.log('Số lượng tối thiểu là 1');
             }
         }
     }
 
-    const calculate = (reponse: any) => {
-        const sum = reponse.reduce((sum:any, item:any) => {
+    // Xóa sản phẩm khỏi giỏ hàng
+    const deleteProductById = async (_id: string) => {
+        const response = await CartService.deleteProductFromCart(_id);  // Gọi API để xóa sản phẩm
+        if (response) {
+            // Sau khi xóa, làm mới lại giỏ hàng
+            getAllProductInCart();
+        }
+    }
+
+    // Tính tổng giá trị giỏ hàng
+    const calculate = (response: any) => {
+        const sum = response.reduce((sum: any, item: any) => {
             return sum + (item.cart.quantity * item.product.price);
-        }, 0)
+        }, 0);
         setToTal(sum);
     }
 
@@ -52,6 +63,6 @@ export const ViewModelCart = () => {
 
     return {
         data, total,
-        updateQuantityById,
+        updateQuantityById, deleteProductById, // Trả về hàm xóa
     }
 }

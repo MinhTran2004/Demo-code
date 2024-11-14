@@ -3,7 +3,7 @@ import axios from "axios";
 import ProductService from "./Product_Sevice";
 
 export class CartService {
-    static url = "http://192.168.5.18:5000/Cart";
+    static url = "http://192.168.1.13:5000/cart";
 
     static addProductToCart = async (data: CartModel) => {
         try {
@@ -16,7 +16,7 @@ export class CartService {
 
     static getAllProductInCart = async () => {
         try {
-            const reponse = (await axios.get(`${this.url}/getAllProductInCart?limit=${10}`)).data;
+            const reponse = (await axios.get(`${this.url}/getAllProductInCart?limit=${30}`)).data;
             if (reponse) {
                 const promises = await reponse.map(async (item: Cart) => {
                     const product = await ProductService.getProductById(item.idProduct);
@@ -50,5 +50,13 @@ export class CartService {
             console.log(err);
         }
     }
-
+    static deleteProductFromCart = async (id: string) => {
+        try {
+            const response = await axios.delete(`${this.url}/deleteProductFromCart/${id}`);
+            return response.data;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    
 }
